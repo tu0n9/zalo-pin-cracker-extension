@@ -1,25 +1,22 @@
-// Sự kiện khi bấm nút "Tự động lấy Hash"
+// ==========================================
+// 1. PHẦN MỚI: TỰ ĐỘNG HÚT HASH TỪ TRANG WEB
+// ==========================================
 document.getElementById('autoGetBtn').addEventListener('click', async () => {
-    // 1. Xác định tab trang web bạn đang mở
     let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
-    // 2. Tiêm hàm getHashFromLocalStorage vào trang web đó để chạy
     chrome.scripting.executeScript({
         target: { tabId: tab.id },
         func: getHashFromLocalStorage,
     }, (results) => {
-        // 3. Nhận kết quả trả về từ trang web
         const resultDiv = document.getElementById('result');
         if (results && results[0] && results[0].result) {
             let foundHash = results[0].result;
             
-            // Điền luôn vào ô input
             document.getElementById('hashInput').value = foundHash;
-            
             resultDiv.style.color = "blue";
             resultDiv.innerText = `[+] Đã hút được hash: ${foundHash}\n[*] Đang tự động giải mã...`;
             
-            // Tự động kích hoạt luôn nút "Bắt đầu quét" (đoạn code bạn viết lúc trước)
+            // Kích hoạt nút "Bắt đầu quét" sau 0.5 giây
             setTimeout(() => {
                 document.getElementById('crackBtn').click();
             }, 500);
@@ -31,18 +28,57 @@ document.getElementById('autoGetBtn').addEventListener('click', async () => {
     });
 });
 
-// Hàm này sẽ được "tiêm" vào ngữ cảnh của trang web (Web Context)
-// Nó không được phép gọi các hàm bên ngoài popup.js
 function getHashFromLocalStorage() {
-    // Quét toàn bộ localStorage
     for (let i = 0; i < localStorage.length; i++) {
         let key = localStorage.key(i);
         let value = localStorage.getItem(key);
-        
-        // Logic nhận diện: Giả sử cứ chuỗi nào dài đúng 32 ký tự thì nghi ngờ là MD5 hash
         if (value && value.length === 32) {
-            return value; // Gửi chuỗi này về cho Extension
+            return value; 
         }
     }
-    return null; // Không tìm thấy
+    return null; 
 }
+
+// ==========================================
+// 2. PHẦN CŨ: VÒNG LẶP BRUTE-FORCE 0000-9999
+// ==========================================
+document.getElementById('crackBtn').addEventListener('click', () => {
+    const targetHash = document.getElementById('hashInput').value.trim().toLowerCase();
+    const resultDiv = document.getElementById('result');
+    
+    if (targetHash.length !== 32) {
+        resultDiv.style.color = "red";
+        resultDiv.innerText = "Lỗi: Vui lòng nhập mã MD5 hợp lệ (32 ký tự).";
+        return;
+    }
+
+    // Nếu chạy đến đây thì dòng chữ trên giao diện phải đổi
+    resultDiv.style.color = "blue";
+    resultDiv.innerText = "[*] Đang quét cạn kiệt...";
+    
+    const startTime = performance.now();
+
+    for (let i = 0; i < 10000; i++) {
+        let pin = i.toString().padStart(4, '0');
+        
+        try {
+            let hashedPin = md5(pin); 
+
+            if (hashedPin === targetHash) {
+                const endTime = performance.now();
+                resultDiv.style.color = "green";
+                resultDiv.innerText = `[+] THÀNH CÔNG!\nMã PIN gốc: ${pin}\nThời gian: ${(endTime - startTime).toFixed(2)} ms`;
+                return;
+            }
+        } catch (error) {
+            // Bắt lỗi nếu file md5.js chưa được nạp thành công
+            resultDiv.style.color = "red";
+            resultDiv.innerText = "[-] Lỗi nghiêm trọng: Hàm md5() không tồn tại. Hãy kiểm tra lại file md5.js và thứ tự thẻ script trong popup.html!";
+            console.error(error);
+            return;
+        }
+    }
+    
+    resultDiv.style.color = "red";
+    resultDiv.innerText = "[-] Thất bại: Không tìm thấy mã PIN nào khớp.";
+});
