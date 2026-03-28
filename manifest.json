@@ -1,0 +1,10 @@
+{
+  "manifest_version": 3,
+  "name": "PIN Cracker",
+  "version": "1.0",
+  "description": "Công cụ minh họa brute-force mã PIN 4 số từ chuỗi MD5 trực tiếp trên client.",
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "icon.png"
+  }
+}

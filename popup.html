@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>MD5 PIN Cracker</title>
+    <style>
+        body { width: 300px; padding: 15px; font-family: sans-serif; }
+        input, button { width: 100%; margin-bottom: 10px; padding: 8px; box-sizing: border-box; }
+        #result { font-weight: bold; color: #d32f2f; white-space: pre-line; }
+    </style>
+</head>
+<body>
+    <h3>MD5 PIN Cracker</h3>
+    <input type="text" id="hashInput" placeholder="Nhập chuỗi MD5 (32 ký tự)...">
+    <button id="crackBtn">Bắt đầu quét</button>
+    <div id="result"></div>
+
+    <script src="md5.js"></script>
+    <script src="popup.js"></script>
+</body>
+</html>
