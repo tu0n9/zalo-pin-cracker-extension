@@ -4,18 +4,103 @@
     <meta charset="utf-8">
     <title>MD5 PIN Cracker</title>
     <style>
-        body { width: 300px; padding: 15px; font-family: sans-serif; }
-        input, button { width: 100%; margin-bottom: 10px; padding: 8px; box-sizing: border-box; }
-        #result { font-weight: bold; color: #d32f2f; white-space: pre-line; }
+        body { 
+            width: 320px; 
+            padding: 20px; 
+            background-color: #050505; 
+            color: #00ff00; 
+            font-family: 'Courier New', Courier, monospace; 
+            border: 1px solid #333;
+            position: relative;
+            overflow: hidden;
+            margin: 0;
+        }
+
+        /* Tia quét màn hình CRT */
+        .scan-line {
+            width: 100%; height: 2px; background-color: #00ff00;
+            opacity: 0.2; position: absolute; top: 0; left: 0;
+            animation: scan 2.5s linear infinite; pointer-events: none;
+        }
+        @keyframes scan { 0% { top: -10px; } 100% { top: 100%; } }
+
+        h3 { 
+            text-align: center; text-shadow: 0 0 8px #00ff00; 
+            margin-top: 0; border-bottom: 1px dashed #00ff00; 
+            padding-bottom: 10px; font-size: 18px; letter-spacing: 2px;
+        }
+
+        button { 
+            width: 100%; margin-bottom: 12px; padding: 10px; 
+            background-color: transparent; color: #00ff00; 
+            border: 1px solid #00ff00; font-family: 'Courier New', Courier, monospace; 
+            font-weight: bold; cursor: pointer; transition: all 0.2s;
+            text-transform: uppercase;
+        }
+        button:hover { background-color: #00ff00; color: #000; box-shadow: 0 0 15px #00ff00; }
+        
+        #autoGetBtn { border-color: #00ffff; color: #00ffff; }
+        #autoGetBtn:hover { background-color: #00ffff; color: #000; box-shadow: 0 0 15px #00ffff; }
+
+        /* Khu vực nhập tay (ẩn mặc định) */
+        #manualInputArea { display: none; margin-top: 15px; }
+        input { 
+            width: 100%; margin-bottom: 10px; padding: 10px; box-sizing: border-box; 
+            background-color: transparent; color: #00ff00; 
+            border: 1px dashed #00ff00; font-family: 'Courier New', Courier, monospace; 
+        }
+        input:focus { outline: none; box-shadow: 0 0 10px #00ff00 inset; }
+
+        #result { margin-top: 15px; font-size: 13px; text-align: center; min-height: 20px; word-wrap: break-word;}
+
+        /* CSS cho 4 ô vuông hiển thị PIN */
+        .pin-container {
+            display: none; /* Ẩn mặc định, chỉ hiện khi crack xong */
+            justify-content: space-between;
+            margin-top: 15px;
+            padding: 0 10px;
+        }
+        .pin-box {
+            width: 50px; height: 60px;
+            border: 2px solid #00ff00;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 32px; font-weight: bold; color: #fff;
+            background-color: rgba(0, 255, 0, 0.1);
+            box-shadow: 0 0 10px #00ff00, inset 0 0 10px #00ff00;
+            text-shadow: 0 0 10px #fff;
+        }
+
+        /* Chữ SUCCESS và tick Laser */
+        .success-text {
+            color: #00ff00; font-size: 18px; font-weight: bold;
+            text-shadow: 0 0 10px #00ff00; letter-spacing: 2px;
+        }
+        .laser-tick {
+            color: #fff;
+            text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00, 0 0 40px #fff;
+        }
     </style>
 </head>
 <body>
-    <h3>MD5 PIN Cracker</h3>
-    <button id="autoGetBtn" style="background-color: #4CAF50; color: white;">Tự động lấy Hash từ Website</button>
-    <hr>
-    <input type="text" id="hashInput" placeholder="Nhập chuỗi MD5 (32 ký tự)...">
-    <button id="crackBtn">Bắt đầu quét</button>
-    <div id="result"></div>
+    <div class="scan-line"></div>
+    <h3>[AUTO_MD5_CRACKER]</h3>
+    
+    <button id="autoGetBtn">> auto_extract_hash</button>
+    <button id="toggleManualBtn">> manual_input_mode</button>
+    
+    <div id="manualInputArea">
+        <input type="text" id="hashInput" placeholder="Target_Hash: 32_chars...">
+        <button id="crackBtn">> execute_brute_force</button>
+    </div>
+    
+    <div id="result">waiting_for_command...</div>
+
+    <div id="pinDisplay" class="pin-container">
+        <div class="pin-box" id="pin0">-</div>
+        <div class="pin-box" id="pin1">-</div>
+        <div class="pin-box" id="pin2">-</div>
+        <div class="pin-box" id="pin3">-</div>
+    </div>
 
     <script src="md5.js"></script>
     <script src="popup.js"></script>
