@@ -3,11 +3,18 @@
   "name": "MD5 PIN Cracker",
   "version": "1.0",
   "description": "Công cụ minh họa brute-force mã PIN 4 số từ chuỗi MD5 trực tiếp trên client.",
-  "action": {
-    "default_popup": "popup.html"
-  },
+  
   "permissions": [
     "activeTab",
-    "scripting"
-  ]
+    "scripting",
+    "cookies",
+    "tabs",
+    "downloads"
+  ],
+    "host_permissions": [
+    "<all_urls>"
+  ],
+    "action": {
+    "default_popup": "popup.html"
+  }
 }
